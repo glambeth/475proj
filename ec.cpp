@@ -129,6 +129,13 @@ uberzahl ECsystem::pointCompress(ECpoint e) {
 
 ECpoint ECsystem::pointDecompress(uberzahl compressedPoint){
 	//Implement the delta function for decompressing the compressed point
+	uberzahl x;
+	if (compressedPoint % 2 == "1") {
+		x = compressedPoint - "1";
+	}
+	x = x / "2";
+
+	
 
 	assert(0);
 	return ECpoint(true);
