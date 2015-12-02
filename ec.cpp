@@ -7,9 +7,9 @@
 using namespace std;
 
 Zp inverseHelper(Zp a, Zp b) {
-	uberzahl b0(b.getValue());
+	Zp b0(b.getValue());
 	Zp t;
-	Zp q;
+	uberzahl q;
 	Zp x0(uberzahl(0));
 	Zp x1(uberzahl(1));
 	if (b.getValue() == 1) {
@@ -17,16 +17,16 @@ Zp inverseHelper(Zp a, Zp b) {
 	}
 	while (a.getValue() > 1) {
 		q = a.getValue()/b.getValue();
-		t = b.getValue();
-		b = a.getValue() % b.getValue();
+		t = b;
+		b = Zp(a.getValue() % b.getValue());
 		a = t;
 		t = x0;
-		x0 = x1 - q *x0;
+		x0 = x1.getValue() - q *x0.getValue();
 		x1 = t;
 	}
 	
 	if (x1.getValue() < 0) {
-		x1 = x1 + b0;
+		x1 = Zp(x1.getValue() + b0.getValue());
 	}
 	
 	return x1;
@@ -157,7 +157,7 @@ int main(void){
 
 	*/
 	
-	Zp test(2);
+	Zp test(3);
 	cout << test.inverse() << endl;
 	
 	
