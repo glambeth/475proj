@@ -21,7 +21,7 @@ Zp inverseHelper(Zp a, Zp b) {
 		b = Zp(a.getValue() % b.getValue());
 		a = t;
 		t = x0;
-		x0 = x1.getValue() - q *x0.getValue();
+		x0 = Zp(x1.getValue() - q *x0.getValue());
 		x1 = t;
 	}
 	
@@ -157,7 +157,7 @@ int main(void){
 
 	*/
 	
-	Zp test(3);
+	Zp test(2);
 	cout << test.inverse() << endl;
 	
 	
