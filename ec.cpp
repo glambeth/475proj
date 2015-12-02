@@ -130,19 +130,19 @@ uberzahl ECsystem::pointCompress(ECpoint e) {
 ECpoint ECsystem::pointDecompress(uberzahl compressedPoint){
 	//Implement the delta function for decompressing the compressed point
 	uberzahl x;
-	if (compressedPoint % 2 == "1") {
+	if (compressedPoint % 2 == 1) {
 		x = compressedPoint - "1";
 	}
 	x = x / "2";
 	Zp xR(x);
 
-	uberzahl xRcubed = this.power(x, uberzahl(3)) % PRIME;
+	uberzahl xRcubed = this->power(x, uberzahl(3)).getValue() % PRIME;
 	uberzahl yEven = (xRcubed + (A * x) + B) % PRIME;
-	uberzahl exponent = PRIME + "1" / "4";
-	uberzahl yOdd = this.power(yEven, exponent) % PRIME;
+	uberzahl exponent = PRIME + uberzahl(1) / uberzahl(4);
+	uberzahl yOdd = this->power(yEven, exponent).getValue() % PRIME;
 	Zp yR;
 
-	if (compressedPoint.bit() % 2 == "0") {
+	if (compressedPoint.bit(1) % 2 == 0) {
 		yR = Zp(yEven);
 	}
 	else {
