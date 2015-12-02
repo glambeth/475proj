@@ -12,7 +12,7 @@ Zp inverseHelper(Zp a, Zp b) {
 	uberzahl q;
 	Zp x0(uberzahl(0));
 	Zp x1(uberzahl(1));
-	if (b.getValue() == 1) {
+	if (b.getValue() == uberzahl(1)) {
 		return 1;
 	}
 	while (a.getValue() > 1) {
