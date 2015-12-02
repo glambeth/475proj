@@ -17,8 +17,8 @@ pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) 
 	 				(p.second.first * (b / a)), p.second.first));
 }
 
-Zp Zp::inverse() const{
-	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME		\
+Zp Zp::inverse() const {
+	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME
 	return (inverseHelper(this->value, PRIME).second.first + PRIME) % PRIME;
 }
 
