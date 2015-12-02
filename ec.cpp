@@ -134,11 +134,22 @@ ECpoint ECsystem::pointDecompress(uberzahl compressedPoint){
 		x = compressedPoint - "1";
 	}
 	x = x / "2";
+	Zp xR(x);
 
-	
+	uberzahl xRcubed = this.power(x, uberzahl(3)) % PRIME;
+	uberzahl yEven = (xRcubed + (A * x) + B) % PRIME;
+	uberzahl exponent = PRIME + "1" / "4";
+	uberzahl yOdd = this.power(yEven, exponent) % PRIME;
+	Zp yR;
 
-	assert(0);
-	return ECpoint(true);
+	if (compressedPoint.bit() % 2 == "0") {
+		yR = Zp(yEven);
+	}
+	else {
+		yR = Zp(yOdd);
+	}
+
+	return ECpoint(xR, yR);
 }
 
 
