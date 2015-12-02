@@ -6,40 +6,22 @@
 #include "ec_ops.h"
 using namespace std;
 
-Zp inverseHelper(Zp a, Zp b) {
-	Zp b0(b.getValue());
-	Zp t;
-	uberzahl q;
-	Zp x0(uberzahl(0));
-	Zp x1(uberzahl(1));
-	if (b.getValue() == uberzahl(1)) {
-		return 1;
+pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) {
+	if (a == "0") {
+		return make_pair(b, make_pair(uberzahl(0), uberzahl(1)));
 	}
-	while (a.getValue() > 1) {
-		q = a.getValue()/b.getValue();
-		t = Zp(b.getValue());
-		b = Zp(a.getValue() % b.getValue());
-		a = Zp(t.getValue());
-		t = Zp(x0.getValue());
-		x0 = Zp(x1.getValue() - q *x0.getValue());
-		x1 = Zp(t.getValue());
-	}
-	
-	if (x1.getValue() < 0) {
-		x1 = Zp(x1.getValue() + b0.getValue());
-	}
-	
-	return x1;
+	pair<uberzahl, pair<uberzahl, uberzahl> > p;
+	p = inverseHelper((b % a), a);
+	return make_pair(p.first, make_pair(p.second.second -
+	 				(p.second.first * (b / a)), p.second.first));
 
 }
 
 Zp Zp::inverse() const{
 	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME		\
-	
-	//b represents the prime for the field.
-	Zp b(uberzahl(5));
-	//assert(0);
-	return inverseHelper(*this, b);
+	//return inverseHelper(*this, b);
+	return (inverseHelper(this->value, PRIME).second.first + PRIME) % PRIME;
+
 }
 
 
@@ -61,7 +43,7 @@ ECpoint ECpoint::repeatSum(ECpoint p, uberzahl v) const {
 Zp ECsystem::power(Zp val, uberzahl pow) {
 	//Find the product of val*val*...*val (pow times)
 
-	assert(0);
+	
 	return 0;
 }
 
@@ -157,10 +139,26 @@ int main(void){
 
 	*/
 	
-	Zp test(3);
+	Zp test(1);
 	cout << test.inverse() << endl;
-	
-	
+
+	Zp test1(2);
+	cout << test1.inverse() << endl;
+
+	Zp test2(3);
+	cout << test2.inverse() << endl;
+
+	Zp test3(4);
+	cout << test3.inverse() << endl;
+
+	Zp test4(5);
+	cout << test4.inverse() << endl;
+
+	Zp test5(-1);
+	cout << test5.inverse() << endl;
+
+	Zp test6(6);
+	cout << test6.inverse() << endl;
 }
 
 
