@@ -18,23 +18,57 @@ pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) 
 
 Zp Zp::inverse() const {
 	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME
-	return (inverseHelper(this->value, PRIME).second.first + PRIME) % PRIME;
+	return Zp(inverseHelper(this->value, PRIME).second.first + PRIME);
 }
 
 
 ECpoint ECpoint::operator + (const ECpoint &a) const {
-	// Implement  elliptic curve addition 		
+	// Implement  elliptic curve addition
+	if (!(*this == a) && !(this->x == a.x)) {
+		//uberzahl slope = (this->y.getValue() - a.y) / (this->x.getValue() - a.x);
+		uberzahl slope = (this->y.getValue() - a.y.getValue())*(this->x.getValue() - a.x.getValue());
+		Zp calcSlope(slope);
+		slope = calcSlope.inverse().getValue();
+		uberzahl slopeSquared = slope * slope;
 
-	assert(0);
-	return ECpoint(true);
+		uberzahl xR = slopeSquared - this->x.getValue() - a.x.getValue();
+		uberzahl yR = -this->y.getValue() + slope*(this->x.getValue() - xR);
+
+		Zp xNew(xR);
+		Zp yNew(yR);
+		return ECpoint(xNew, yNew);
+	}
+	else if ((*this == a) && (uberzahl(2)*this->y.getValue() != "0")) {
+		uberzahl xPSquared = this->x.getValue() * this->x.getValue();
+		uberzahl slope = ((uberzahl(3) * xPSquared) - A) * (uberzahl(2) * this->y.getValue());
+		Zp calcSlope(slope);
+		slope = calcSlope.inverse().getValue();
+		uberzahl slopeSquared = slope * slope;
+
+		uberzahl xR = slopeSquared - uberzahl(2)*this->x.getValue();
+		uberzahl yR = -this->y.getValue() + slope*(this->x.getValue() - xR);
+
+		Zp xNew(xR);
+		Zp yNew(yR);
+		return ECpoint(xNew, yNew);
+	}
+	else {
+		return ECpoint(true);
+	}
 }
 
+ECpoint repeatSumHelper(ECpoint sum, ECpoint p, uberzahl v) {
+	if (v == "0") {
+		return sum;
+	}
+	else {
+		return repeatSumHelper(sum + p, p, v-"1");
+	}
+}
 
 ECpoint ECpoint::repeatSum(ECpoint p, uberzahl v) const {
 	//Find the sum of p+p+...+p (vtimes)		
-
-	assert(0);
-	return ECpoint(true);
+	return repeatSumHelper(ECpoint(Zp(uberzahl(0)), Zp(uberzahl(0))), p, v);
 }
 
 uberzahl powerHelper(uberzahl base, uberzahl power) {
@@ -68,7 +102,7 @@ uberzahl powerHelper(uberzahl base, uberzahl power) {
 
 Zp ECsystem::power(Zp val, uberzahl pow) {
 	//Find the product of val*val*...*val (pow times)
-	return powerHelper(val.getValue(), pow);
+	return Zp(powerHelper(val.getValue(), pow));
 }
 
 
@@ -205,6 +239,7 @@ int main(void){
 	cout << "It should be 38 (in mod 53) or 4177248169415651 in PRIME" << endl;
 
 	*/
+
 }
 
 
