@@ -6,7 +6,7 @@
 #include "ec_ops.h"
 using namespace std;
 
-<<<<<<< HEAD
+
 pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) {
 	if (a == "0") {
 		return make_pair(b, make_pair(uberzahl(0), uberzahl(1)));
@@ -15,48 +15,11 @@ pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) 
 	p = inverseHelper((b % a), a);
 	return make_pair(p.first, make_pair(p.second.second -
 	 				(p.second.first * (b / a)), p.second.first));
-=======
-Zp inverseHelper(Zp a, Zp b) {
-	Zp b0(b.getValue());
-	Zp t(0);
-	uberzahl q(0);
-	Zp x0(uberzahl(0));
-	Zp x1(uberzahl(1));
-	if (b.getValue() == uberzahl(1)) {
-		cout << x1 << endl;
-		return 1;
-	}
-	while (a.getValue() > 1) {
-		q = a.getValue()/b.getValue();
-		t = Zp(b.getValue());
-		b = Zp(a.getValue() % b.getValue());
-		a = Zp(t.getValue());
-		t = Zp(x0.getValue());
-		x0 = Zp(x1.getValue() - q *x0.getValue());
-		x1 = Zp(t.getValue());
-	}
-	
-	if (x1.getValue() < 0) {
-		x1 = Zp(x1.getValue() + b0.getValue());
-	}
-	return x1;
->>>>>>> 43c06934fe7e4590ca2919e057ad3c8d29e462bf
-
 }
 
 Zp Zp::inverse() const{
 	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME		\
-<<<<<<< HEAD
-	//return inverseHelper(*this, b);
 	return (inverseHelper(this->value, PRIME).second.first + PRIME) % PRIME;
-
-=======
-	
-	//b represents the prime for the field.
-	Zp b(uberzahl(7));
-	//assert(0);
-	return inverseHelper(*this, b);
->>>>>>> 43c06934fe7e4590ca2919e057ad3c8d29e462bf
 }
 
 
