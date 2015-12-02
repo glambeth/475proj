@@ -6,7 +6,6 @@
 #include "ec_ops.h"
 using namespace std;
 
-
 pair<uberzahl, pair<uberzahl, uberzahl> > inverseHelper(uberzahl a, uberzahl b) {
 	if (a == "0") {
 		return make_pair(b, make_pair(uberzahl(0), uberzahl(1)));
@@ -38,11 +37,38 @@ ECpoint ECpoint::repeatSum(ECpoint p, uberzahl v) const {
 	return ECpoint(true);
 }
 
+uberzahl powerHelper(uberzahl base, uberzahl power) {
+	if (power == "1") {
+		return base;
+	}
+	else {
+		if ((power % uberzahl(2)) == "0") {
+			uberzahl base0 = powerHelper(base, power / uberzahl(2));
+			base0 = base0 * base0;
+			if (base0 >= PRIME) {
+				return base0 % PRIME;
+			}
+			else {
+				return base0;
+			}
+		}
+		else {
+			uberzahl base1 = powerHelper(base, (power - uberzahl(1)) / uberzahl(2));
+			base1 = base1 * base1;
+			uberzahl ans = base * base1;
+			if (ans >= PRIME) {
+				return ans % PRIME;
+			}
+			else {
+				return ans;
+			}
+		}
+	}
+}
+
 Zp ECsystem::power(Zp val, uberzahl pow) {
 	//Find the product of val*val*...*val (pow times)
-
-	
-	return 0;
+	return powerHelper(val.getValue(), pow);
 }
 
 
@@ -135,13 +161,10 @@ int main(void){
 			
 	return 1;
 
-	*/
 	
-<<<<<<< HEAD
+	
+	// set PRIME_STR to 5
 	Zp test(1);
-=======
-	Zp test(2);
->>>>>>> 43c06934fe7e4590ca2919e057ad3c8d29e462bf
 	cout << test.inverse() << endl;
 
 	Zp test1(2);
@@ -161,6 +184,27 @@ int main(void){
 
 	Zp test6(6);
 	cout << test6.inverse() << endl;
+
+	// set PRIME_STR to 53
+	Zp val0(uberzahl(3));
+	uberzahl expon = uberzahl(37);
+	ECsystem test;
+	cout << "The result is: " << test.power(val0, expon) << endl;
+	cout << "It should be 32 (in mod 53) or 450283905890997363 in PRIME" << endl;
+
+	Zp val1(uberzahl(7));
+	uberzahl expon1 = uberzahl(9);
+	ECsystem test1;
+	cout << "The result is: " << test1.power(val1, expon1) << endl;
+	cout << "It should be 43 (in mod 53) or 40353607 in PRIME" << endl;
+
+	Zp val2(uberzahl(11));
+	uberzahl expon2 = uberzahl(15);
+	ECsystem test2;
+	cout << "The result is: " << test2.power(val2, expon2) << endl;
+	cout << "It should be 38 (in mod 53) or 4177248169415651 in PRIME" << endl;
+
+	*/
 }
 
 
