@@ -8,11 +8,12 @@ using namespace std;
 
 Zp inverseHelper(Zp a, Zp b) {
 	Zp b0(b.getValue());
-	Zp t;
-	uberzahl q;
+	Zp t(0);
+	uberzahl q(0);
 	Zp x0(uberzahl(0));
 	Zp x1(uberzahl(1));
 	if (b.getValue() == uberzahl(1)) {
+		cout << x1 << endl;
 		return 1;
 	}
 	while (a.getValue() > 1) {
@@ -28,7 +29,6 @@ Zp inverseHelper(Zp a, Zp b) {
 	if (x1.getValue() < 0) {
 		x1 = Zp(x1.getValue() + b0.getValue());
 	}
-	
 	return x1;
 
 }
@@ -37,7 +37,7 @@ Zp Zp::inverse() const{
 	// Implement the Extended Euclidean Algorithm to return the inverse mod PRIME		\
 	
 	//b represents the prime for the field.
-	Zp b(uberzahl(5));
+	Zp b(uberzahl(7));
 	//assert(0);
 	return inverseHelper(*this, b);
 }
@@ -157,7 +157,7 @@ int main(void){
 
 	*/
 	
-	Zp test(3);
+	Zp test(2);
 	cout << test.inverse() << endl;
 	
 	
