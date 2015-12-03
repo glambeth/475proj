@@ -146,7 +146,7 @@ ECpoint ECsystem::pointDecompress(uberzahl compressedPoint){
 		yR = Zp(yEven);
 	}
 	else {
-		yR = Zp(yOdd);
+		yR = Zp(PRIME - yOdd);
 	}
 
 	return ECpoint(xR, yR);
