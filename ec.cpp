@@ -169,8 +169,6 @@ pair<pair<Zp,Zp>,uberzahl> ECsystem::encrypt(ECpoint publicKey, uberzahl private
 	//  Do not generate a random key. Use the private key that is passed from the main function
 
 
-	//step 1: generate a random integer X, 0 <= X <= N - 1
-	uberzahl x = random(uberzahl(0), uberzahl(ORDER_STR - 1));
 	
 	//step 2: compute Q = X*G = (xq, yq) and R = X*P = (X*Y)*G = (xr,yr) using repeated squaring
 	ECpoint q = privateKey * ECpoint(GX,GY);
