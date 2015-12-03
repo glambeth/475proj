@@ -25,28 +25,32 @@ Zp Zp::inverse() const {
 ECpoint ECpoint::operator + (const ECpoint &a) const {
 	// Implement  elliptic curve addition
 	if (!(*this == a) && !(this->x == a.x)) {
-		//uberzahl slope = (this->y.getValue() - a.y) / (this->x.getValue() - a.x);
-		uberzahl slope = (this->y.getValue() - a.y.getValue())*(this->x.getValue() - a.x.getValue());
-		Zp calcSlope(slope);
-		slope = calcSlope.inverse().getValue();
-		uberzahl slopeSquared = slope * slope;
+		uberzahl slopeRise = (this->y.getValue() - a.y.getValue());
+		uberzahl slopeRun = (this->x.getValue() - a.x.getValue());
+		Zp runInverse(slopeRun);
+		slopeRun = runInverse.inverse().getValue();
+		uberzahl slope = slopeRise * slopeRun;
+		Zp slopeSquared(slope * slope);
 
-		uberzahl xR = slopeSquared - this->x.getValue() - a.x.getValue();
+		uberzahl xR = slopeSquared.getValue() - this->x.getValue() - a.x.getValue();
 		uberzahl yR = -this->y.getValue() + slope*(this->x.getValue() - xR);
 
 		Zp xNew(xR);
 		Zp yNew(yR);
 		return ECpoint(xNew, yNew);
 	}
-	else if ((*this == a) && (uberzahl(2)*this->y.getValue() != "0")) {
+	else if ((*this == a) && (Zp(uberzahl(2)*this->y.getValue()).getValue() != "0")) {
 		uberzahl xPSquared = this->x.getValue() * this->x.getValue();
-		uberzahl slope = ((uberzahl(3) * xPSquared) - A) * (uberzahl(2) * this->y.getValue());
-		Zp calcSlope(slope);
-		slope = calcSlope.inverse().getValue();
-		uberzahl slopeSquared = slope * slope;
+		uberzahl slopeRise = Zp((uberzahl(3) * xPSquared) + A).getValue();
+		uberzahl slopeRun = Zp(uberzahl(2) * this->y.getValue()).getValue();
+		Zp calcSlope(slopeRun);
+		slopeRun = calcSlope.inverse().getValue();
+		uberzahl slope = slopeRise * slopeRun;
+		Zp slopeSquared(slope * slope);
 
-		uberzahl xR = slopeSquared - uberzahl(2)*this->x.getValue();
-		uberzahl yR = -this->y.getValue() + slope*(this->x.getValue() - xR);
+		uberzahl xR = slopeSquared.getValue() - uberzahl(2)*this->x.getValue();
+		uberzahl yRNegated = -(this->y.getValue());
+		uberzahl yR = yRNegated + slope*(this->x.getValue() - xR);
 
 		Zp xNew(xR);
 		Zp yNew(yR);
@@ -57,18 +61,25 @@ ECpoint ECpoint::operator + (const ECpoint &a) const {
 	}
 }
 
-ECpoint repeatSumHelper(ECpoint sum, ECpoint p, uberzahl v) {
+ECpoint repeatSumHelper(ECpoint p, uberzahl v) {
 	if (v == "0") {
-		return sum;
+		return ECpoint(uberzahl(0), uberzahl(0));
+	}
+	else if (v == "1") {
+		return p;
+	}
+	else if ((v % "2") == "1") {
+		return p + repeatSumHelper(p, v - "1");
+		//return repeatSumHelper(sum + p, p, v-"1");
 	}
 	else {
-		return repeatSumHelper(sum + p, p, v-"1");
+		return repeatSumHelper(p + p, v / "2");
 	}
 }
 
 ECpoint ECpoint::repeatSum(ECpoint p, uberzahl v) const {
 	//Find the sum of p+p+...+p (vtimes)		
-	return repeatSumHelper(ECpoint(Zp(uberzahl(0)), Zp(uberzahl(0))), p, v);
+	return ECpoint(repeatSumHelper(p, v));
 }
 
 uberzahl powerHelper(uberzahl base, uberzahl power) {
@@ -204,21 +215,24 @@ pair<Zp,Zp> ECsystem::decrypt(pair<pair<Zp,Zp>, uberzahl> ciphertext){
 
 
 int main(void){
-	/*
+	
 	srand(time(0));
 	ECsystem ec;
 	unsigned long incrementVal;	
+	cout << "HERE 0" << endl;
 	pair <ECpoint, uberzahl> keys = ec.generateKeys();
-	
+	cout << "HERE 1" << endl;
 	
 	Zp plaintext0(MESSAGE0);
 	Zp plaintext1(MESSAGE1);
+	cout << "HERE 2" << endl;
 	ECpoint publicKey = keys.first;
 	cout<<"Public key is: "<<publicKey<<"\n";
 	
 	cout<<"Enter offset value for sender's private key"<<endl;
 	cin>>incrementVal;
 	uberzahl privateKey = XB + incrementVal;
+	cout << "HERE 3" << endl;
 	
 	pair<pair<Zp,Zp>, uberzahl> ciphertext = ec.encrypt(publicKey, privateKey, plaintext0,plaintext1);	
 	cout<<"Encrypted ciphertext is: ("<<ciphertext.first.first<<", "<<ciphertext.first.second<<", "<<ciphertext.second<<")\n";
@@ -234,51 +248,6 @@ int main(void){
 		cout << "Plaintext different from original plaintext." << endl;	
 			
 	return 1;
-
-	
-	
-	// set PRIME_STR to 5
-	Zp test(1);
-	cout << test.inverse() << endl;
-
-	Zp test1(2);
-	cout << test1.inverse() << endl;
-
-	Zp test2(3);
-	cout << test2.inverse() << endl;
-
-	Zp test3(4);
-	cout << test3.inverse() << endl;
-
-	Zp test4(5);
-	cout << test4.inverse() << endl;
-
-	Zp test5(-1);
-	cout << test5.inverse() << endl;
-
-	Zp test6(6);
-	cout << test6.inverse() << endl;
-
-	// set PRIME_STR to 53
-	Zp val0(uberzahl(3));
-	uberzahl expon = uberzahl(37);
-	ECsystem test;
-	cout << "The result is: " << test.power(val0, expon) << endl;
-	cout << "It should be 32 (in mod 53) or 450283905890997363 in PRIME" << endl;
-
-	Zp val1(uberzahl(7));
-	uberzahl expon1 = uberzahl(9);
-	ECsystem test1;
-	cout << "The result is: " << test1.power(val1, expon1) << endl;
-	cout << "It should be 43 (in mod 53) or 40353607 in PRIME" << endl;
-
-	Zp val2(uberzahl(11));
-	uberzahl expon2 = uberzahl(15);
-	ECsystem test2;
-	cout << "The result is: " << test2.power(val2, expon2) << endl;
-	cout << "It should be 38 (in mod 53) or 4177248169415651 in PRIME" << endl;
-
-	*/
 
 }
 
