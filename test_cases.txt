@@ -1,0 +1,61 @@
+	//Tests for function correctness
+	
+	// set PRIME_STR to 5
+	Zp test(1);
+	cout << test.inverse() << endl;
+
+	Zp test1(2);
+	cout << test1.inverse() << endl;
+
+	Zp test2(3);
+	cout << test2.inverse() << endl;
+
+	Zp test3(4);
+	cout << test3.inverse() << endl;
+
+	Zp test4(5);
+	cout << test4.inverse() << endl;
+
+	Zp test5(-1);
+	cout << test5.inverse() << endl;
+
+	Zp test6(6);
+	cout << test6.inverse() << endl;
+
+	// set PRIME_STR to 53
+	Zp val0(uberzahl(3));
+	uberzahl expon = uberzahl(37);
+	ECsystem test;
+	cout << "The result is: " << test.power(val0, expon) << endl;
+	cout << "It should be 32 (in mod 53) or 450283905890997363 in PRIME" << endl;
+
+	Zp val1(uberzahl(7));
+	uberzahl expon1 = uberzahl(9);
+	ECsystem test1;
+	cout << "The result is: " << test1.power(val1, expon1) << endl;
+	cout << "It should be 43 (in mod 53) or 40353607 in PRIME" << endl;
+
+	Zp val2(uberzahl(11));
+	uberzahl expon2 = uberzahl(15);
+	ECsystem test2;
+	cout << "The result is: " << test2.power(val2, expon2) << endl;
+	cout << "It should be 38 (in mod 53) or 4177248169415651 in PRIME" << endl;
+
+	Zp xP(uberzahl(2));
+	Zp yP(uberzahl(5));
+	ECpoint P(xP, yP);
+
+
+	Zp xQ(uberzahl(3));
+	Zp yQ(uberzahl(7));
+	ECpoint Q(xQ, yQ);
+
+	ECpoint result = P + Q;
+	cout << P << " + " << Q << " = " << result << endl;
+
+	result = P + P;
+	cout << P << " + " << P << " = " << result << endl;
+
+	ECpoint repeatP = result.repeatSum(P, uberzahl(2));
+	cout << P << " + " << P << " = " << repeatP << endl;
+	 */
