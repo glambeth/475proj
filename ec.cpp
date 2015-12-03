@@ -140,24 +140,25 @@ uberzahl ECsystem::pointCompress(ECpoint e) {
 
 ECpoint ECsystem::pointDecompress(uberzahl compressedPoint){
 	//Implement the delta function for decompressing the compressed point
-	uberzahl x;
-	if (compressedPoint % 2 == 1) {
-		x = compressedPoint - "1";
+	uberzahl x = compressedPoint;
+	if (compressedPoint.bit(0) == 1) {
+		x = compressedPoint - 1;
 	}
 	x = x / "2";
 	Zp xR(x);
 
 	uberzahl xRcubed = this->power(x, uberzahl(3)).getValue() % PRIME;
-	uberzahl yEven = (xRcubed + (A * x) + B) % PRIME;
+	uberzahl ySquared = (xRcubed + (A * x) + B) % PRIME;
 	uberzahl exponent = PRIME + uberzahl(1) / uberzahl(4);
-	uberzahl yOdd = this->power(yEven, exponent).getValue() % PRIME;
+	uberzahl yRootOne = this->power(ySquared, exponent).getValue() % PRIME;
+	uberzahl yRootTwo = PRIME - yRootOne;
 	Zp yR;
 
-	if (compressedPoint.bit(1) % 2 == 0) {
-		yR = Zp(yEven);
+	if (compressedPoint.bit(0) == yRootOne.bit(0)) {
+		yR = Zp(yRootOne);
 	}
 	else {
-		yR = Zp(PRIME - yOdd);
+		yR = Zp(yRootTwo);
 	}
 
 	return ECpoint(xR, yR);
@@ -171,13 +172,15 @@ pair<pair<Zp,Zp>,uberzahl> ECsystem::encrypt(ECpoint publicKey, uberzahl private
 
 	
 	//step 2: compute Q = X*G = (xq, yq) and R = X*P = (X*Y)*G = (xr,yr) using repeated squaring
-	ECpoint q = privateKey * ECpoint(GX,GY);
-	ECpoint r = privateKey * publicKey;
+	//ECpoint q = privateKey * ECpoint(GX,GY);
+	ECpoint Q(Zp(privateKey * GX), Zp(privateKey * GY));
+	//ECpoint r = privateKey * publicKey;
+	ECpoint R(this->power(publicKey.x, privateKey), this->power(publicKey.y, privateKey));
 	
 	//step 3: set C0 = M0*xr mod p1 and C1 = M1*yr modp1 and C2 = y(Q)
-	Zp c0 = (plaintext0 * r.x).getValue() % PRIME_STR;
-	Zp c1 = (plaintext1 * r.y).getValue() % PRIME_STR;
-	uberzahl c2 = this->pointCompress(q);
+	Zp c0((plaintext0.getValue() * R.x.getValue()) % PRIME);
+	Zp c1((plaintext1.getValue() * R.y.getValue()) % PRIME);
+	uberzahl c2 = this->pointCompress(Q);
 	
 	//return C = (c0, c1, c2)
 	
@@ -189,12 +192,14 @@ pair<Zp,Zp> ECsystem::decrypt(pair<pair<Zp,Zp>, uberzahl> ciphertext){
 	// Implement EC Decryption
 
 	//step 1: Compute R = Y *lambda(C2) 
-	ECpoint r = this->privateKey * this->pointDecompress(ciphertext.second);
+	//ECpoint r = this->privateKey * this->pointDecompress(ciphertext.second);
+	ECpoint decompressed = this->pointDecompress(ciphertext.second);
+	ECpoint R(Zp(decompressed.x.getValue() * XA), Zp(decompressed.y.getValue() * XA));
 
 	
 	//step 2: Set Mo = C0 *Xr^-1 modp and M1 = C1*yr^-1 mod p
-	Zp m0 = (ciphertext.first.first * r.x.inverse()).getValue() % PRIME_STR;
-	Zp m1 = (ciphertext.first.second * r.y.inverse()).getValue() % PRIME_STR;
+	Zp m0((ciphertext.first.first.getValue() * R.x.inverse().getValue()) % PRIME);
+	Zp m1((ciphertext.first.second.getValue() * R.y.inverse().getValue()) % PRIME);
 	
 	//return MoM1
 	return make_pair(m0,m1);
