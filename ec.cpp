@@ -157,16 +157,38 @@ pair<pair<Zp,Zp>,uberzahl> ECsystem::encrypt(ECpoint publicKey, uberzahl private
 	// You must implement elliptic curve encryption
 	//  Do not generate a random key. Use the private key that is passed from the main function
 
-	assert(0);
-	return make_pair(make_pair(0,0),0);
+
+	//step 1: generate a random integer X, 0 <= X <= N - 1
+	uberzahl x = random(uberzahl(0), uberzahl(ORDER_STR - 1));
+	
+	//step 2: compute Q = X*G = (xq, yq) and R = X*P = (X*Y)*G = (xr,yr) using repeated squaring
+	ECpoint q = privateKey * ECpoint(GX,GY);
+	ECpoint r = privateKey * publicKey;
+	
+	//step 3: set C0 = M0*xr mod p1 and C1 = M1*yr modp1 and C2 = y(Q)
+	Zp c0 = (plaintext0 * r.x).getValue() % PRIME_STR;
+	Zp c1 = (plaintext1 * r.y).getValue() % PRIME_STR;
+	uberzahl c2 = this->pointCompress(q);
+	
+	//return C = (c0, c1, c2)
+	
+	return make_pair(make_pair(c0,c1),c2);
 }
 
 
 pair<Zp,Zp> ECsystem::decrypt(pair<pair<Zp,Zp>, uberzahl> ciphertext){
 	// Implement EC Decryption
 
-	assert(0);
-	return make_pair(0,0);
+	//step 1: Compute R = Y *lambda(C2) 
+	ECpoint r = this->privateKey * this->pointDecompress(ciphertext.second);
+
+	
+	//step 2: Set Mo = C0 *Xr^-1 modp and M1 = C1*yr^-1 mod p
+	Zp m0 = (ciphertext.first.first * r.x.inverse()).getValue() % PRIME_STR;
+	Zp m1 = (ciphertext.first.second * r.y.inverse()).getValue() % PRIME_STR;
+	
+	//return MoM1
+	return make_pair(m0,m1);
 }
 
 
